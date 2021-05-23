@@ -169,7 +169,7 @@ else:
     print("今天没有更新")
 
 #第五步，保存今日的数据并覆盖历史数据
-# record(get_50())
+record(get_50())
 
 # organize_data(listces)
 
