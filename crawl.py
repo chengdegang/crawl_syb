@@ -12,11 +12,6 @@ import re
 # print(type(res))
 # res.status_code == requests.codes.ok
 # res.raise_for_status()
-#将页面源码写入本地
-# with open('data/result.txt','wb') as result:
-#     for line in res.iter_content(200000):
-#         result.write(line)
-# result.close()
 
 #转成bs4，方便提取html信息
 # soup = bs4.BeautifulSoup(open('data/result.txt','r',encoding='gbk'), 'html.parser')
@@ -144,8 +139,11 @@ def sendmail(mesg):
     msg['To'] = 'ccc'
 
     #处理入参数据
+    mesg_2 = ''
+    for i in range(len(mesg)):
+        mesg_2 = mesg_2 + mesg[int(i)] + '\n'
 
-    text = f"Hi!\nThis is the mes u care about:\n{mesg}"
+    text = f"Hi!\nThis is the mes u care about:\n{mesg_2}"
     text_plain = MIMEText(text, 'plain', 'utf-8')
     msg.attach(text_plain)
 
@@ -157,7 +155,6 @@ def sendmail(mesg):
     smtp.quit()
 
 #第一步，获取当日最新的数据
-# get_50()
 #第二步，将当日的数据与昨日的数据对比并处理结果数据到可用程度
 result = judge2(get_50(),reopen())
 #第四步，做判断，若result有更新即大于0，则运行组织函数及发信函数
