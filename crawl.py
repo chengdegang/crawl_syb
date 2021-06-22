@@ -1,8 +1,6 @@
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import webbrowser
-import pyperclip
 import requests
 import bs4
 import re
@@ -30,11 +28,11 @@ def get_50():
     res = requests.get('http://www.shiyebian.net/zhejiang/hangzhou/')
     res.raise_for_status()
     # 将页面源码写入本地
-    with open('data/result.txt', 'wb') as result:
+    with open('/Users/jackrechard/PycharmProjects/crawl_syb/data/result.txt', 'wb') as result:
         for line in res.iter_content(200000):
             result.write(line)
     result.close()
-    soup = bs4.BeautifulSoup(open('data/result.txt', 'r', encoding='gbk'), 'html.parser')
+    soup = bs4.BeautifulSoup(open('/Users/jackrechard/PycharmProjects/crawl_syb/data/result.txt', 'r', encoding='gbk'), 'html.parser')
     result_2 = []
     i = 1
     while i <= 50:
@@ -58,14 +56,14 @@ def get_50():
 # print(res)
 #传入列表初步记录到本地的函数
 def record(list):
-    with open('data/record.txt','w') as record:
+    with open('/Users/jackrechard/PycharmProjects/crawl_syb/data/record.txt','w') as record:
         for line in list:
             record.write(str(line) + '\n')
 
 #读取历史保存的文件并转换成列表
 def reopen():
     reopen_list =[]
-    with open('data/record.txt','r') as refile:
+    with open('/Users/jackrechard/PycharmProjects/crawl_syb/data/record.txt','r') as refile:
         rerecord = refile.readlines()
         for line in rerecord:
             #去掉换行符
