@@ -4,25 +4,7 @@ from email.mime.text import MIMEText
 import requests
 import bs4
 import re
-
-#master
-# webbrowser.open('http://www.shiyebian.net/zhejiang/hangzhou/')
-# res = requests.get('http://www.shiyebian.net/zhejiang/hangzhou/')
-# print(type(res))
-# res.status_code == requests.codes.ok
-# res.raise_for_status()
-
-#转成bs4，方便提取html信息
-# soup = bs4.BeautifulSoup(open('data/result.txt','r',encoding='gbk'), 'html.parser')
-# print(type(soup))
-# elements = soup.select('div')
-# print(len(elements))
-#查找每日公告
-# info = soup.find_all('ul', class_='lie1')
-# print(info)
-#获取所有的文本信息
-# info_text = info[0].getText()
-# print(info_text)
+import time
 
 #获取前五十个招考信息,作为一个新的列表
 def get_50():
@@ -41,20 +23,9 @@ def get_50():
             f'body > div.main > div.listl.fl > div.listrr.fr > div > div.listlie > ul> li:nth-child({i})')
         info = str(info)
         i = i + 1
-        #不去除【】，现去除后格式不一致影响判断
-        # info = info.lstrip('[')
-        # info = info.rstrip(']')
-        # print(info)
         result_2.append(info)
-    # 去掉列表括号
-    # result_2 = ''.join(result_2)
-    # print(result_2)
     return result_2
 
-
-# print(result_2)
-# body > div.main > div.listl.fl > div.listrr.fr > div > div.listlie > ul> li:nth-child(6)
-# print(res)
 #传入列表初步记录到本地的函数
 def record(list):
     with open('/Users/jackrechard/PycharmProjects/crawl_syb/data/record.txt','w') as record:
@@ -77,8 +48,6 @@ def reopen():
 def judge(listnew,listold):
     a = [x for x in listnew if x in listold]  # 两个列表表都存在
     b = [y for y in (listnew + listold) if y not in a]
-    # print(f'same is:{a}')
-    # print(f'notsame is:{b}')
     c = []
     for z in b:
         if z in listnew and z in listold :
@@ -117,20 +86,21 @@ def organize_data(list):
         url = ''.join(url)
         title = re.findall(r'_blank">(.+?)</a', line)
         title = ''.join(title)
-        mes =  f'更新日期:{time}  url:{url}  主题:{title}'
+        mes =  f'[更新日期]{time}  {url}  [主题]{title}'
         # print(mes)
         res.append(mes)
     # print(res)
     return res
 
 def sendmail(mesg):
+    timenow = time.strftime("%Y_%m_%d %H:%M:%S", time.localtime())
     smtpserver = 'smtp.qq.com'
     username = 'chengdgccc@qq.com'
     password = 'glgfdpxlnhiogaji'
     sender = 'chengdgccc@qq.com'
     receivers = ['18868890069@163.com']
 
-    subject = 'syb reminder'
+    subject = f'syb reminder {timenow}'
 
     msg = MIMEMultipart('mixed')
     msg['Subject'] = subject
