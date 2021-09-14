@@ -129,11 +129,20 @@ def deal_excel(flist):
             write_excel(file=writeff, data=data, sheetname='finalxlsx')
     return attention
 
+def del_file(d=True):
+    if d == True:
+        try:
+            os.remove('/ces')
+            print('delete ok~')
+        except Exception:
+            print('delete failed ..')
+
 if __name__ == '__main__':
     # read_file(file='download')
     # organize_data(listces)
-    down_excel(org)
+    # down_excel(org)
     # testrequest()
     #遍历下载文件的路径下所有的xls及xlsx文件并处理
     # deal_excel(read_file(file='download'))
+    del_file()
 

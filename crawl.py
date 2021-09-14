@@ -5,8 +5,9 @@ import requests
 import bs4
 import re
 import time
+from downloadDealFile import down_excel
 
-#获取前五十个招考信息,作为一个新的列表
+#获取前五十个信息,作为一个新的列表
 def get_50():
     res = requests.get('http://www.shiyebian.net/zhejiang/hangzhou/')
     res.raise_for_status()
@@ -126,16 +127,18 @@ def sendmail(mesg):
 #第一步，获取当日最新的数据
 #第二步，将当日的数据与昨日的数据对比并处理结果数据到可用程度
 result = judge2(get_50(),reopen())
-#第四步，做判断，若result有更新即大于0，则运行组织函数及发信函数
+#第四步，做判断，若result有更新即大于0，则运行组织函数及发信函数，且下载更新的excel到本地
 if len(result) > 0 :
     print("今天更新了")
     result2 = organize_data(result)
+    down_excel(result2)
     sendmail(result2)
 else:
     print("今天没有更新")
 
 #第五步，保存今日的数据并覆盖历史数据
 record(get_50())
+
 
 # organize_data(listces)
 
