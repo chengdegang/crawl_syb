@@ -1,6 +1,6 @@
 import os
 import zipfile
-
+import pdb
 from openpyxl.workbook import Workbook
 import openpyxl
 import time
@@ -9,63 +9,77 @@ from openpyxl.cell import MergedCell
 file1 = ''
 file_xxx2 = '/Users/jackrechard/PycharmProjects/testexcel/file/xxx2.xlsx'
 
-def write_excel(file = '默认.xlsx',data = [['默认数据3','默认数据4'],['默认数据5','默认数据6']],
-                sheetname = 'ces',creat = True):
+def write_excel(file = '默认.xlsx',data = [['默认数据1','默认数据3'],['默认数据3','默认数据4']],
+                sheetname = 'ces',ccreat = False):
     """
-    在输入路径创建xlsx文件,若已存在会直接覆盖写入数据，需要重写为若输入路径不存在文件，则在输入路径下创建文件并写入
+    :param file:文件名如默认.xlsx
+    :param data:数据，需要以列表嵌套形式传入
+    :param sheetname:要写入的sheet名
+    :param ccreat: 按日期命名重新创建的excel
+    :return:
+    在输入路径创建xlsx文件,若已存在会直接覆盖写入数据，若输入路径不存在文件，则在输入路径下创建文件并写入，注意若写入的
+    sheet名与已存在的sheet名重复会导致原有的数据被覆盖
     """
+    # pdb.set_trace()
     if os.path.exists(file) == True:
         wb = openpyxl.load_workbook(file)
         # 默认写到第一个sheet中，index为0
-        wb.create_sheet(index=0, title=f'{sheetname}')
+        idex = len(wb.sheetnames)
+        wb.create_sheet(index=idex + 1, title=f'{sheetname}')
         sheet = wb[f'{sheetname}']
         # 好的写法写入excel
         for row_index, row_item in enumerate(data):
             for col_index, col_item in enumerate(row_item):
                 sheet.cell(row=row_index + 1, column=col_index + 1, value=col_item)
         wb.save(file)
-        print('---写入完成---')
-    if creat == True:
-        wbc = Workbook()
-        # path = file
-        # path = file.split('/')[:-1]
-        wbc.save(file)
-        wb = openpyxl.load_workbook(file)
-        # 默认写到第一个sheet中，index为0
-        wb.create_sheet(index=0, title=f'{sheetname}')
-        sheet = wb[f'{sheetname}']
-        # 好的写法写入excel
-        for row_index, row_item in enumerate(data):
-            for col_index, col_item in enumerate(row_item):
-                sheet.cell(row=row_index + 1, column=col_index + 1, value=col_item)
-        wb.save(file)
-        print('---写入完成---')
-        return file
+        print(f'---写入完成（写到第{idex + 1}个sheet）---')
     else:
-        wbc = Workbook()
-        log_path = os.getcwd() + '/'
-        # t = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
-        # suffix = '.xlsx'  # 文件类型
-        # newfile = file + suffix
-        path = log_path + file
-        wbc.save(path)
-        print(f"创建文件 {log_path + file} ")
-        wb = openpyxl.load_workbook(log_path + file)
-        # 默认写到第一个sheet中，index为0
-        wb.create_sheet(index=0, title=f'{sheetname}')
-        sheet = wb[f'{sheetname}']
-        # 好的写法写入excel
-        for row_index, row_item in enumerate(data):
-            for col_index, col_item in enumerate(row_item):
-                sheet.cell(row=row_index + 1, column=col_index + 1, value=col_item)
-        wb.save(log_path + file)
-        print('---写入完成---')
-        return log_path + file
+        if ccreat == True:
+            wbc = Workbook()
+            log_path = os.getcwd() + '/'
+            # t = time.strftime('%Y%m%d_%H%M', time.localtime(time.time()))
+            # suffix = '.xlsx'  # 文件类型
+            # newfile = file + suffix
+            path = log_path + file
+            wbc.save(path)
+            print(f"创建文件 {log_path + file} ")
+            wb = openpyxl.load_workbook(log_path + file)
+            # 默认写到第一个sheet中，index为0
+            wb.create_sheet(index=0, title=f'{sheetname}')
+            sheet = wb[f'{sheetname}']
+            # 好的写法写入excel
+            for row_index, row_item in enumerate(data):
+                for col_index, col_item in enumerate(row_item):
+                    sheet.cell(row=row_index + 1, column=col_index + 1, value=col_item)
+            wb.save(log_path + file)
+            print('---写入完成（excel命名按日期）---')
+            return log_path + file
+        else:
+            wbc = Workbook()
+            # path = file
+            # path = file.split('/')[:-1]
+            wbc.save(file)
+            wb = openpyxl.load_workbook(file)
+            # 默认写到第一个sheet中，index为0
+            wb.create_sheet(index=0, title=f'{sheetname}')
+            sheet = wb[f'{sheetname}']
+            # 好的写法写入excel
+            for row_index, row_item in enumerate(data):
+                for col_index, col_item in enumerate(row_item):
+                    sheet.cell(row=row_index + 1, column=col_index + 1, value=col_item)
+            wb.save(file)
+            print('---写入完成（不存在输入file，重新创建）---')
+            return file
 
-"""
-支持xlsx格式的读,输入要读的文件路径,筛选需要的数据
-"""
-def openpy_read_xlsx(file,sheetname):
+def openpy_read_xlsx(file,sheetname,rvalue1,rvalue2,cvalue):
+    """
+    :param file: 要读的文件名xlsx
+    :param sheetname: sheet名
+    :param rvalue1: 要筛选的title行所包含的值，如序号
+    :param rvalue2: 要筛选的某行数据所包含的值，如专业
+    :param cvalue: 要筛选的某列数据所包含的值，如情报学
+    :return:筛选的结果列表
+    """
     wb = openpyxl.load_workbook(file)
     table = wb[sheetname]
     #获取行数列数
@@ -77,7 +91,7 @@ def openpy_read_xlsx(file,sheetname):
     for row in range(1,nrow+1):
         for col in range(1,ncol+1):
             #如果这一行中存在title字样，遍历这一行的所有数据，添加到列表中
-            if "序号" in str(table.cell(row, col).value):
+            if rvalue1 in str(table.cell(row, col).value):
                 for i in range(1,ncol+1):
                     # print(table.cell(row, i).value)
                     need_data2.append(table.cell(row, i).value)
@@ -88,12 +102,12 @@ def openpy_read_xlsx(file,sheetname):
     for row in range(1,nrow+1):
         for col in range(1,ncol+1):
             #判断是否包含'value'，是的话选取整列
-            if "专业" in str(table.cell(row,col).value):
+            if rvalue2 in str(table.cell(row,col).value):
                 #判断这列是否包含'_1'，是的话取整行
                 # print(table.cell(row, col).value)
                 #遍历这一列的所有数据，并标记存在'_1'的行
                 for i in range(1,nrow+1):
-                    if "情报学" in str(table.cell(i,col).value):
+                    if cvalue in str(table.cell(i,col).value):
                         # print(table.cell(i,col).value
                         #将找到的这一行所有数据写入列表
                         for j in range(1,ncol+1):
@@ -116,6 +130,7 @@ def merged_deal_xlsx(file):
     newdata = []
     wb = openpyxl.load_workbook(file)
     # table = wb["Sheet2"]
+    pdb.set_trace()
     sheetnames = wb.sheetnames #
     table = wb[sheetnames[0]] #获取第一个sheet
     nrow = table.max_row
@@ -154,6 +169,7 @@ def merged_deal_xlsx(file):
 #第二步，读取第一步保存的文件并筛选指定的数据返回一个list
 #第三步，将这个list数据写入到文件中，命名一个sheetname
 if __name__ == '__main__':
+    print('调用了deal_xlsx~~~')
     # # write_excel(file=file_xxx2, data=merged_deal_xlsx(file_xxx2), sheetname='tempxlsx')
     # # data = openpy_read_xlsx(file=file_xxx2, sheetname='tempxlsx')
     # # write_excel(file=file_xxx2, data=data, sheetname='finalxlsx')
@@ -161,13 +177,16 @@ if __name__ == '__main__':
     # filesz = '/Users/jackrechard/PycharmProjects/crawl_syb/download/2021年浙江杭州电子科技大学招聘公告（第四批）.xlsx'
     # # filesz = '/Users/jackrechard/PycharmProjects/crawl_syb/download/2021年浙江工商大学招聘公告（第三批）.xlsx' #实战
     # # filesz = '/Users/jackrechard/PycharmProjects/crawl_syb/download/2021年浙江师范大学招聘公告（第三批）.xlsx'
+    # filesz = '/Users/jackrechard/PycharmProjects/testexcel/file/xxx2.xlsx'
     # ff = filesz
     # try :
     #     write_excel(file=ff, data=merged_deal_xlsx(ff), sheetname='tempxlsx')
-    #     data = openpy_read_xlsx(file=ff, sheetname='tempxlsx')
-    #     # print(len(data)) #无数据时等于1
-    #     write_excel(file=ff, data=data, sheetname='finalxlsx')
+        # data = openpy_read_xlsx(file=ff, sheetname='tempxlsx',
+        #                             rvalue1='title',rvalue2='value',cvalue='_1')
+        # # print(len(data)) #无数据时等于1
+        # write_excel(file=ff, data=data, sheetname='finalxlsx')
     # except zipfile.BadZipFile:
     #     print(f'文件异常，请检查,路径为：{ff}')
-    write_excel('/Users/jackrechard/Desktop/ces666.xlsx')
+    # write_excel(file='/Users/jackrechard/PycharmProjects/testexcel/file/ces.xlsx',sheetname='nnn')
+    # write_excel('/Users/jackrechard/Desktop/ces666.xlsx')
 

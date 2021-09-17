@@ -6,6 +6,8 @@ import bs4
 import re
 import time
 from downloadDealFile import down_excel
+from downloadDealFile import deal_excel
+from downloadDealFile import read_file
 
 #获取前五十个信息,作为一个新的列表
 def get_50():
@@ -93,7 +95,7 @@ def organize_data(list):
     # print(res)
     return res
 
-def sendmail(mesg):
+def sendmail(mesg,atten):
     timenow = time.strftime("%Y_%m_%d %H:%M:%S", time.localtime())
     smtpserver = 'smtp.qq.com'
     username = 'chengdgccc@qq.com'
@@ -113,7 +115,9 @@ def sendmail(mesg):
     for i in range(len(mesg)):
         mesg_2 = mesg_2 + mesg[int(i)] + '\n'
 
-    text = f"Hi!\nThis is the mes u care about:\n{mesg_2}"
+    mesg_3 = {mesg_2} + '\n' + '~~!以下是您关注的处理数据!~~' + '\n' + {atten}
+
+    text = f"Hi!\nThis is the mes u care about:\n{mesg_3}"
     text_plain = MIMEText(text, 'plain', 'utf-8')
     msg.attach(text_plain)
 
@@ -131,8 +135,9 @@ result = judge2(get_50(),reopen())
 if len(result) > 0 :
     print("今天更新了")
     result2 = organize_data(result)
-    down_excel(result2)
-    sendmail(result2)
+    ddir = down_excel(result2)
+    atte = deal_excel(read_file(ddir))
+    sendmail(mesg=result2,atten=atte)
 else:
     print("今天没有更新")
 

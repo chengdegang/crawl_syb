@@ -104,13 +104,14 @@ def merged_deal_xls(file):
 从xls文件中读取指定sheet数据，并将合并单元格补全,返回一个list,可将list数据写入xlsx
 """
 if __name__ == "__main__":
+    print("调用了deal_xls~~~")
 
     # merged_deal_xls(file_xxx)
 
-    readff = file_xxx
-    writeff = f'{os.path.splitext(readff)[0]}_cg.xlsx'
-    # print(writeff)
-    write_excel(file=writeff, data=merged_deal_xls(readff), sheetname='tempxlsx')
-    data = openpy_read_xlsx(file=writeff, sheetname='tempxlsx')
-    write_excel(file=writeff, data=data, sheetname='finalxlsx')
+    # readff = file_xxx
+    # writeff = f'{os.path.splitext(readff)[0]}_cg.xlsx'
+    # # print(writeff)
+    # write_excel(file=writeff, data=merged_deal_xls(readff), sheetname='tempxlsx')
+    # data = openpy_read_xlsx(file=writeff, sheetname='tempxlsx')
+    # write_excel(file=writeff, data=data, sheetname='finalxlsx')
 

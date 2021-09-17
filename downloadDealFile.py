@@ -1,3 +1,5 @@
+import shutil
+import stat
 import time
 import zipfile
 import requests
@@ -8,6 +10,8 @@ from deal_xlsx import write_excel
 from deal_xlsx import merged_deal_xlsx
 from deal_xlsx import openpy_read_xlsx
 from deal_xls import merged_deal_xls
+from pathlib import Path
+import pdb
 
 listces = [
         '[<li><em>05-14</em><a href="http://www.shiyebian.net/xinxi/376489.html" target="_blank">2021年杭州住房公积金管理中心桐庐分中心招聘编外人员公告</a></li>]',
@@ -19,20 +23,31 @@ org = ['[更新日期]08-24  http://www.shiyebian.net/xinxi/387025.html  [主题
        '[更新日期]08-24  http://www.shiyebian.net/xinxi/387023.html  [主题]2021年浙江工商大学招聘公告（第三批）']
 # print(org)
 
-def read_file(file):
+def read_file(file,needall=False):
     """
-    读取输入路径下的所有xlsx&xls文件，并返回一个列表
+    读取输入路径下的所有xlsx&xls文件，并返回一个列表，默认不遍历子文件夹
     """
     filexl = []
-    for root, dirs, files in os.walk(file):
-        for f in files:
-            if os.path.splitext(os.path.join(root, f))[1] == '.xlsx':
-                filexl.append(os.path.join(root, f))
-            if os.path.splitext(os.path.join(root, f))[1] == '.xls':
-                filexl.append(os.path.join(root, f))
+    if needall:
+        for root, dirs, files in os.walk(file):
+            for f in files:
+                if os.path.splitext(os.path.join(root, f))[1] == '.xlsx':
+                    filexl.append(os.path.join(root, f))
+                if os.path.splitext(os.path.join(root, f))[1] == '.xls':
+                    filexl.append(os.path.join(root, f))
+    else:
+        # tf = file.split("/")[:-1]
+        # tf = '/'.join(tf)
+        # pdb.set_trace()
+        for f in os.listdir(file):
+            if os.path.splitext(f)[1] == '.xlsx':
+                filexl.append(os.path.join(file, f))
+            if os.path.splitext(f)[1] == '.xls':
+                filexl.append(os.path.join(file, f))
+
     if len(filexl) == 0:
         print("当前路径下.xlsx及.xls文件为0")
-    # print(filexl)
+    print(filexl)
     return filexl
 
 def down_excel(list):
@@ -90,6 +105,7 @@ def down_excel(list):
                 with open(f'/Users/jackrechard/PycharmProjects/crawl_syb/download/{t}/{name[0]}.xlsx', 'wb') as f:
                     f.write(res3.content)
     print('down success~')
+    return f'/Users/jackrechard/PycharmProjects/crawl_syb/download/{t}'
 
 def testrequest():
     print("dwonloading file...")
@@ -104,16 +120,19 @@ def deal_excel(flist):
     """
     attention = []
     for f in flist:
+        # pdb.set_trace()
         #区分xls及xlsx并处理
         # print(os.path.splitext(f))
         if os.path.splitext(f)[1] == '.xlsx':
             ff = f
             try:
                 write_excel(file=ff, data=merged_deal_xlsx(ff), sheetname='tempxlsx')
-                data = openpy_read_xlsx(file=ff, sheetname='tempxlsx')
+                data = openpy_read_xlsx(file=ff, sheetname='tempxlsx',
+                                    rvalue1='title',rvalue2='value',cvalue='_1')
                 # print(len(data)) #无数据时等于1
                 if len(data) > 1:
-                    attention.append(ff)
+                    info = ff.split("/")[:-1]
+                    attention.append(info)
                     print(f'xlsx找到符合条件的数据了~ 它是: {ff}')
                 write_excel(file=ff, data=data, sheetname='finalxlsx')
             except zipfile.BadZipFile:
@@ -122,27 +141,40 @@ def deal_excel(flist):
             ff = f
             writeff = f'{os.path.splitext(ff)[0]}_cg.xlsx'
             write_excel(file=writeff, data=merged_deal_xls(ff), sheetname='tempxlsx')
-            data = openpy_read_xlsx(file=writeff, sheetname='tempxlsx')
+            # shutil.move(str(f'{os.getcwd()}/file/{f_name}'), f'{newdir}/')
+            newdir = Path(f"{'/'.join(ff.split('/')[:-1])}/xls/")
+            if newdir.exists():
+                print('cunz')
+            else:
+                os.mkdir(newdir)
+            shutil.move(str(ff),newdir)#写入后将原始文件移动
+            data = openpy_read_xlsx(file=writeff, sheetname='tempxlsx',
+                                    rvalue1='title',rvalue2='value',cvalue='_1')
             if len(data) > 1:
-                attention.append(ff)
+                info = ff.split("/")[:-1]
+                attention.append(info)
                 print(f'xls找到符合条件的数据了~ 它是: {ff}')
             write_excel(file=writeff, data=data, sheetname='finalxlsx')
+    print(attention)
     return attention
 
-def del_file(d=True):
-    if d == True:
-        try:
-            os.remove('/ces')
-            print('delete ok~')
-        except Exception:
-            print('delete failed ..')
+def del_file(path,d=True):
+    # if d == True:
+    #     try:
+    #         os.remove('/ces')
+    #         print('delete ok~')
+    #     except Exception:
+    #         print('delete failed ..')
+    # os.chmod(path, stat.S_IXUSR)
+    os.remove(path)
 
 if __name__ == '__main__':
-    # read_file(file='download')
+    print("调用了downloadDealFile~~~")
+    # read_file(file='/Users/jackrechard/PycharmProjects/testexcel/file',needall=False)
     # organize_data(listces)
     # down_excel(org)
     # testrequest()
     #遍历下载文件的路径下所有的xls及xlsx文件并处理
-    # deal_excel(read_file(file='download'))
-    del_file()
+    # deal_excel(read_file(file='/Users/jackrechard/PycharmProjects/testexcel/file'))
+    # del_file(path='ces')
 

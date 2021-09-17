@@ -17,10 +17,21 @@ def write(file):
 def osc():
     t = time.strftime("%Y-%m-%d", time.localtime())
     os.mkdir(f'download/{t}')
+def ces2(d = 3):
+    import pdb
+    a = "aaa"
+    pdb.set_trace()
+    # pdb.pm()
+    b = "bbb"
+    c = "ccc"
+    final = a + b + c
+    print(final)
+    return final
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    osc()
+    # osc()
     # write('/Users/jackrechard/Desktop/ces.xlsx')
+    ces2()
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
