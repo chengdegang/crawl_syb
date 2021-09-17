@@ -95,7 +95,7 @@ def organize_data(list):
     # print(res)
     return res
 
-def sendmail(mesg,atten):
+def sendmail(mesg):
     timenow = time.strftime("%Y_%m_%d %H:%M:%S", time.localtime())
     smtpserver = 'smtp.qq.com'
     username = 'chengdgccc@qq.com'
@@ -115,9 +115,7 @@ def sendmail(mesg,atten):
     for i in range(len(mesg)):
         mesg_2 = mesg_2 + mesg[int(i)] + '\n'
 
-    mesg_3 = {mesg_2} + '\n' + '~~!以下是您关注的处理数据!~~' + '\n' + {atten}
-
-    text = f"Hi!\nThis is the mes u care about:\n{mesg_3}"
+    text = f"Hi!\nThis is the mes u care about:\n{mesg_2}"
     text_plain = MIMEText(text, 'plain', 'utf-8')
     msg.attach(text_plain)
 
@@ -137,7 +135,11 @@ if len(result) > 0 :
     result2 = organize_data(result)
     ddir = down_excel(result2)
     atte = deal_excel(read_file(ddir))
-    sendmail(mesg=result2,atten=atte)
+    if len(atte) > 0 :
+        sendmail(mesg=result2 + atte)
+    else:
+        sendmail(mesg=result2)
+
 else:
     print("今天没有更新")
 

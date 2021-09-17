@@ -130,7 +130,7 @@ def merged_deal_xlsx(file):
     newdata = []
     wb = openpyxl.load_workbook(file)
     # table = wb["Sheet2"]
-    pdb.set_trace()
+    # pdb.set_trace()
     sheetnames = wb.sheetnames #
     table = wb[sheetnames[0]] #获取第一个sheet
     nrow = table.max_row

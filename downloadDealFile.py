@@ -47,7 +47,7 @@ def read_file(file,needall=False):
 
     if len(filexl) == 0:
         print("当前路径下.xlsx及.xls文件为0")
-    print(filexl)
+    # print(filexl)
     return filexl
 
 def down_excel(list):
@@ -128,7 +128,7 @@ def deal_excel(flist):
             try:
                 write_excel(file=ff, data=merged_deal_xlsx(ff), sheetname='tempxlsx')
                 data = openpy_read_xlsx(file=ff, sheetname='tempxlsx',
-                                    rvalue1='title',rvalue2='value',cvalue='_1')
+                                    rvalue1='序号',rvalue2='专业',cvalue='电气工程')
                 # print(len(data)) #无数据时等于1
                 if len(data) > 1:
                     info = ff.split("/")[:-1]
@@ -149,7 +149,7 @@ def deal_excel(flist):
                 os.mkdir(newdir)
             shutil.move(str(ff),newdir)#写入后将原始文件移动
             data = openpy_read_xlsx(file=writeff, sheetname='tempxlsx',
-                                    rvalue1='title',rvalue2='value',cvalue='_1')
+                                    rvalue1='序号',rvalue2='专业',cvalue='电气工程')
             if len(data) > 1:
                 info = ff.split("/")[:-1]
                 attention.append(info)
@@ -175,6 +175,6 @@ if __name__ == '__main__':
     # down_excel(org)
     # testrequest()
     #遍历下载文件的路径下所有的xls及xlsx文件并处理
-    # deal_excel(read_file(file='/Users/jackrechard/PycharmProjects/testexcel/file'))
+    # deal_excel(read_file(file='/Users/jackrechard/PycharmProjects/crawl_syb/download/2021-09-08'))
     # del_file(path='ces')
 
